@@ -1,0 +1,163 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@400;600;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap');
+
+@import 'tailwindcss';
+
+@theme {
+  --font-serif: 'Playfair Display', Georgia, ui-serif, serif;
+  --font-sans: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-cn: 'Noto Serif SC', 'Source Han Serif SC', 'STSong', 'SimSun', serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #faf6ef;
+}
+::-webkit-scrollbar-thumb {
+  background: #e0d5c0;
+  border-radius: 3px;
+}
+
+@layer base {
+  html,
+  body {
+    @apply min-h-screen font-sans text-[#2c2416] antialiased;
+    background: #f5efe6;
+  }
+
+  body {
+    @apply m-0;
+  }
+
+  #root {
+    @apply flex min-h-screen justify-center;
+  }
+}
+
+@layer utilities {
+  .font-serif-premium {
+    font-family: var(--font-serif);
+  }
+
+  .font-cn {
+    font-family: var(--font-cn);
+  }
+
+  .scrollbar-hide {
+    @apply [scrollbar-width:none] [-ms-overflow-style:none];
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer components {
+  .app-container {
+    @apply relative flex h-screen w-full max-w-[480px] flex-col overflow-hidden shadow-2xl;
+    background: #f5efe6;
+  }
+}
+
+/* FAQ Scroll Animation */
+@keyframes faq-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-faq-scroll {
+  animation: faq-scroll 28s linear infinite;
+}
+
+.animate-faq-scroll:hover {
+  animation-play-state: paused;
+}
+
+/* Video Overlay Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Slide Down for Chapter Card */
+@keyframes slideDown {
+  from { opacity: 0; max-height: 0; }
+  to { opacity: 1; max-height: 2000px; }
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s ease;
+}
+
+/* Slide Up for Modal */
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease;
+}
+
+/* Thumbs Up Bounce Animation */
+@keyframes thumbBounce {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-3px); }
+  60% { transform: translateY(-1px); }
+}
+
+.animate-thumb-bounce {
+  animation: thumbBounce 2s ease-in-out infinite;
+}
+
+/* Ambient atmosphere */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.35; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+@keyframes cloud-drift {
+  0% { transform: translateX(-20%); opacity: 0; }
+  15% { opacity: 0.25; }
+  85% { opacity: 0.18; }
+  100% { transform: translateX(120%); opacity: 0; }
+}
+@keyframes ripple-expand {
+  0% { transform: scale(0.85); opacity: 0.25; }
+  100% { transform: scale(1.25); opacity: 0; }
+}
+@keyframes petal-fall {
+  0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.4; }
+  100% { transform: translateY(110vh) translateX(40px) rotate(360deg); opacity: 0; }
+}
+@keyframes moon-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Ken Burns slow zoom for ambient background */
+@keyframes ken-burns {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.06); }
+}
+
+.animate-ken-burns {
+  animation: ken-burns 20s ease-in-out infinite alternate;
+}
+

@@ -1,0 +1,23 @@
+
+[functions.submit-fragment]
+enabled = true
+verify_jwt = false
+import_map = "./functions/submit-fragment/deno.json"
+entrypoint = "./functions/submit-fragment/index.ts"
+
+[functions.trigger-workflow-a]
+enabled = true
+verify_jwt = false
+import_map = "./functions/trigger-workflow-a/deno.json"
+entrypoint = "./functions/trigger-workflow-a/index.ts"
+
+[functions.trigger-workflow-b]
+enabled = true
+verify_jwt = false
+import_map = "./functions/trigger-workflow-b/deno.json"
+entrypoint = "./functions/trigger-workflow-b/index.ts"
+
+[functions.dify-callback]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/dify-callback/index.ts"
