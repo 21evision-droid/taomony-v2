@@ -2,8 +2,8 @@ name: Supabase Keepalive
 
 on:
   schedule:
-    # Run every 4 days at 12:00 UTC — well under Supabase's 7-day threshold
-    - cron: '0 12 */4 * *'
+    # Run every 2 days — well under Supabase's 7-day threshold, with margin
+    - cron: '0 12 */2 * *'
   # Allow manual trigger from GitHub UI
   workflow_dispatch:
 
@@ -18,8 +18,8 @@ jobs:
           USER_ID: ${{ secrets.SUPABASE_USER_ID }}
           CHANNEL_ID: ${{ secrets.SUPABASE_CHANNEL_ID }}
         run: |
-          # Insert heartbeat row
-          HEARTBEAT=$(curl -s -X POST "${SUPABASE_URL}/rest/v1/raw_fragments" \
+          # Insert heartbeat row and keep it (persistent data = real activity)
+          HEARTBEAT=$(curl -s --fail-with-body -X POST "${SUPABASE_URL}/rest/v1/raw_fragments" \
             -H "apikey: ${SERVICE_KEY}" \
             -H "Authorization: Bearer ${SERVICE_KEY}" \
             -H "Content-Type: application/json" \
@@ -29,9 +29,9 @@ jobs:
           HEARTBEAT_ID=$(echo "$HEARTBEAT" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)
           echo "Heartbeat: $HEARTBEAT_ID"
 
-          # Delete it — we only need the write activity
-          curl -s -X DELETE "${SUPABASE_URL}/rest/v1/raw_fragments?id=eq.${HEARTBEAT_ID}" \
+          # Also run a SELECT to generate query activity
+          curl -s --fail-with-body "${SUPABASE_URL}/rest/v1/raw_fragments?select=count" \
             -H "apikey: ${SERVICE_KEY}" \
-            -H "Authorization: Bearer ${SERVICE_KEY}"
+            -H "Authorization: Bearer ${SERVICE_KEY}" > /dev/null
 
           echo "Keepalive complete"
