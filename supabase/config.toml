@@ -21,3 +21,7 @@ entrypoint = "./functions/trigger-workflow-b/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/dify-callback/index.ts"
+
+[functions.keepalive]
+enabled = true
+verify_jwt = false

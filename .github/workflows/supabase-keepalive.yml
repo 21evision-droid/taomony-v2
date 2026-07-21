@@ -2,7 +2,7 @@ name: Supabase Keepalive
 
 on:
   schedule:
-    # Run every 2 days — well under Supabase's 7-day threshold, with margin
+    # Run every 2 days — under Supabase's 7-day threshold, with margin
     - cron: '0 12 */2 * *'
   # Allow manual trigger from GitHub UI
   workflow_dispatch:
@@ -11,25 +11,29 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Write heartbeat to raw_fragments
+      - name: Invoke keepalive Edge Function
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          USER_ID: ${{ secrets.SUPABASE_USER_ID }}
-          CHANNEL_ID: ${{ secrets.SUPABASE_CHANNEL_ID }}
         run: |
-          # Insert heartbeat row and keep it (persistent data = real activity)
-          HEARTBEAT=$(curl -s --fail-with-body -X POST "${SUPABASE_URL}/rest/v1/raw_fragments" \
+          echo "=== Edge Function ping ==="
+          RESULT=$(curl -s --fail-with-body \
+            "${SUPABASE_URL}/functions/v1/keepalive" \
+            -H "Authorization: Bearer ${SERVICE_KEY}")
+          echo "$RESULT"
+
+          echo "=== Database heartbeat ==="
+          curl -s --fail-with-body -X POST "${SUPABASE_URL}/rest/v1/raw_fragments" \
             -H "apikey: ${SERVICE_KEY}" \
             -H "Authorization: Bearer ${SERVICE_KEY}" \
             -H "Content-Type: application/json" \
             -H "Prefer: return=representation" \
-            -d "{\"user_id\":\"${USER_ID}\",\"content\":\"keepalive-$(date -u +%s)\",\"channel_id\":\"${CHANNEL_ID}\",\"source_type\":\"fragment\",\"status\":\"pending\"}")
+            -d "$(cat <<'PAYLOAD'
+{"user_id":"96c04d6f-dbdc-4c96-819c-de05b0e3a333","content":"keepalive-$(date -u +%s)","channel_id":"b0000000-0000-4000-8000-000000000005","source_type":"fragment","status":"pending"}
+PAYLOAD
+)"
 
-          HEARTBEAT_ID=$(echo "$HEARTBEAT" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)
-          echo "Heartbeat: $HEARTBEAT_ID"
-
-          # Also run a SELECT to generate query activity
+          echo "=== Activity check ==="
           curl -s --fail-with-body "${SUPABASE_URL}/rest/v1/raw_fragments?select=count" \
             -H "apikey: ${SERVICE_KEY}" \
             -H "Authorization: Bearer ${SERVICE_KEY}" > /dev/null
