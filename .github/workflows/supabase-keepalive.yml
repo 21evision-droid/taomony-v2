@@ -11,31 +11,11 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Invoke keepalive Edge Function
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      - name: Ping keepalive Edge Function
         run: |
-          echo "=== Edge Function ping ==="
-          RESULT=$(curl -s --fail-with-body \
-            "${SUPABASE_URL}/functions/v1/keepalive" \
-            -H "Authorization: Bearer ${SERVICE_KEY}")
-          echo "$RESULT"
-
-          echo "=== Database heartbeat ==="
-          curl -s --fail-with-body -X POST "${SUPABASE_URL}/rest/v1/raw_fragments" \
-            -H "apikey: ${SERVICE_KEY}" \
-            -H "Authorization: Bearer ${SERVICE_KEY}" \
-            -H "Content-Type: application/json" \
-            -H "Prefer: return=representation" \
-            -d "$(cat <<'PAYLOAD'
-{"user_id":"96c04d6f-dbdc-4c96-819c-de05b0e3a333","content":"keepalive-$(date -u +%s)","channel_id":"b0000000-0000-4000-8000-000000000005","source_type":"fragment","status":"pending"}
-PAYLOAD
-)"
-
-          echo "=== Activity check ==="
-          curl -s --fail-with-body "${SUPABASE_URL}/rest/v1/raw_fragments?select=count" \
-            -H "apikey: ${SERVICE_KEY}" \
-            -H "Authorization: Bearer ${SERVICE_KEY}" > /dev/null
-
+          # The function itself writes a heartbeat row to raw_fragments.
+          # No auth needed (verify_jwt=false) — zero secrets required.
+          curl -sf --max-time 60 \
+            "https://jiwsgaegoudcutdnqydf.supabase.co/functions/v1/keepalive"
+          echo ""
           echo "Keepalive complete"
