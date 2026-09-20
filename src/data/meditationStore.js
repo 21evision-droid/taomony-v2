@@ -11,8 +11,6 @@
 
 const STORAGE_KEY = 'taomony_meditation_attempts';
 
-export const UNIT_KINDS = ['subtask', 'combination'];
-
 // ── Internal helpers ────────────────────────────────────────
 
 function empty() {
@@ -25,7 +23,7 @@ function read() {
     const data = raw ? JSON.parse(raw) : empty();
     if (!data.subtask) data.subtask = {};
     if (!data.combination) data.combination = {};
-    autoExpire(data);
+    if (autoExpire(data)) write(data);
     return data;
   } catch {
     return empty();
@@ -40,6 +38,7 @@ function write(data) {
 // marked 'expired' (never 'failed'). The old record is preserved (design §6.2).
 function autoExpire(data) {
   const now = Date.now();
+  let changed = false;
   Object.values(data).forEach((units) => {
     Object.values(units).forEach((attempts) => {
       attempts.forEach((a) => {
@@ -50,10 +49,12 @@ function autoExpire(data) {
         ) {
           a.status = 'expired';
           a.closedAt = new Date().toISOString();
+          changed = true;
         }
       });
     });
   });
+  return changed;
 }
 
 function findActiveIndex(attempts) {
@@ -98,6 +99,16 @@ export function isUnitComplete(kind, unitId) {
  * Returns the new in-progress attempt record.
  */
 export function beginAttempt(kind, unitId, repeatCount, windowDays) {
+  if (!Number.isInteger(repeatCount) || repeatCount <= 0) {
+    throw new Error(
+      `beginAttempt: invalid repeatCount (${repeatCount}). Expected a positive integer from the unit data.`
+    );
+  }
+  if (!Number.isInteger(windowDays) || windowDays <= 0) {
+    throw new Error(
+      `beginAttempt: invalid windowDays (${windowDays}). Expected a positive integer from the unit data.`
+    );
+  }
   const data = read();
   const unitAttempts = data[kind]?.[unitId] || [];
   const attemptNumber = unitAttempts.length + 1;
