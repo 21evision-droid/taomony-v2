@@ -50,7 +50,9 @@ export default function MeditationSubtask() {
   const isCurrent = !complete && !previousIncomplete;
 
   const activeAttempt = getActiveAttempt('subtask', subtask.id);
-  const completedReps = activeAttempt?.completedReps || 0;
+  const completedReps = complete
+    ? subtask.repeatCount
+    : activeAttempt?.completedReps || 0;
 
   const nextInDim = subtasksInDim[myIndex + 1];
 
