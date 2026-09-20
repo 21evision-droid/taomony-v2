@@ -1,11 +1,13 @@
 // MeditationRecordCard — a completed micro-task record in the Profile's
 // Meditation section (design §10.1). Mirrors Learning's Tao Archive card.
 
+import { Link } from 'react-router-dom';
 import {
   MEDITATION_DIMENSIONS,
   MEDITATION_SUBTASKS,
   MEDITATION_COMBINATIONS,
 } from '../../data/meditationMock';
+import { getHarvest } from '../../data/meditationHarvestStore';
 
 function MeditationRecordCard({ kind, unitId, record }) {
   const subtask =
@@ -20,6 +22,9 @@ function MeditationRecordCard({ kind, unitId, record }) {
   const dimension = subtask
     ? MEDITATION_DIMENSIONS.find((d) => d.id === subtask.dimensionId)
     : null;
+  const harvest = combination
+    ? Boolean(getHarvest(unitId, record.attemptNumber))
+    : false;
 
   const fmt = (iso) =>
     new Date(iso).toLocaleDateString('en-US', {
@@ -41,6 +46,14 @@ function MeditationRecordCard({ kind, unitId, record }) {
           Complete
         </span>
         <span className="text-stone-300">{fmt(record.closedAt)}</span>
+        {harvest && (
+          <Link
+            to={`/meditate/combination/${unitId}/harvest`}
+            className="ml-auto text-stone-500 underline hover:text-stone-900 transition-colors"
+          >
+            View Harvest
+          </Link>
+        )}
       </div>
     </div>
   );
