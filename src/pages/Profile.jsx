@@ -1,8 +1,14 @@
+// LEGACY — This file belongs to the previous Profile architecture
+// (Ranking, Score, Streak, Social Activity). It will be replaced by the
+// new Member Profile system: Personal Harmony Archive across 5 modules.
+// See: docs/LEARNING_MODULE_SPEC.md §12 & §15
 import { useAuth } from '../contexts/AuthContext';
 import ProfileHeader from '../components/profile/ProfileHeader';
 import ProfileStats from '../components/profile/ProfileStats';
 import RankingTimeline from '../components/profile/RankingTimeline';
 import CommentActivity from '../components/profile/CommentActivity';
+import MeditationRecordCard from '../components/profile/MeditationRecordCard';
+import { getCompletedRecords } from '../data/meditationStore';
 
 export default function Profile() {
   const { user, loading } = useAuth();
@@ -30,6 +36,8 @@ export default function Profile() {
     );
   }
 
+  const meditationRecords = getCompletedRecords();
+
   return (
     <div className="pb-8 pt-2">
       <div className="px-4" style={{ maxWidth: 480, margin: '0 auto' }}>
@@ -37,6 +45,29 @@ export default function Profile() {
         <ProfileStats />
         <RankingTimeline />
         <CommentActivity />
+
+        {/* Meditation — completed micro-tasks (design §10.1) */}
+        <div className="mt-8 pt-6 border-t border-stone-200">
+          <p className="text-stone-400 text-xs uppercase tracking-wider mb-3">
+            Meditation
+          </p>
+          {meditationRecords.length > 0 ? (
+            <div className="flex flex-col gap-3">
+              {meditationRecords.map(({ kind, unitId, record }) => (
+                <MeditationRecordCard
+                  key={`${kind}-${unitId}`}
+                  kind={kind}
+                  unitId={unitId}
+                  record={record}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="text-stone-400 text-sm">
+              No completed meditations yet.
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
