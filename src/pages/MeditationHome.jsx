@@ -1,9 +1,9 @@
 // MeditationHome — Micro-task sub-module entry (design §10).
-// 3 dimension cards + Combinations entry with lock state.
-// This is NOT the meditation module home (the top-level screen listing the
-// three sub-modules is deferred — design §1).
+// 4 navigation cards: the 3 dimensions + Combinations. Each opens that
+// item's micro-task list. Combinations shows its lock state but remains
+// tappable — locked items are previewable inside (design §5.1).
 
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Lock } from 'lucide-react';
 import {
   MEDITATION_DIMENSIONS,
@@ -61,30 +61,28 @@ export default function MeditationHome() {
         })}
       </div>
 
-      {/* Combinations entry */}
-      <div className="mt-6">
-        {combinationsUnlocked ? (
-          <Link
-            to="/meditate/combinations"
-            className="block bg-stone-900 text-white rounded-xl p-4 text-center hover:bg-stone-800 transition-colors"
-          >
-            <p className="font-medium text-sm">Combinations</p>
-            <p className="text-stone-300 text-xs mt-1">
-              Cross-dimension practices — the heart of your training
-            </p>
-          </Link>
-        ) : (
-          <div className="bg-white rounded-xl p-4 text-center border border-stone-100">
-            <p className="flex items-center justify-center gap-1.5 text-stone-400 text-sm font-medium">
-              <Lock size={14} />
-              Combinations
-            </p>
-            <p className="text-stone-400 text-xs mt-1">
-              Complete all sub-tasks to unlock ({completedSubtasks}/{totalSubtasks})
-            </p>
-          </div>
-        )}
-      </div>
+      {/* Combinations — tappable entry, lock state shown on the right */}
+      <button
+        onClick={() => navigate('/meditate/combinations')}
+        className="mt-3 bg-white rounded-xl p-4 text-left border border-stone-100 shadow-sm hover:shadow-md hover:border-stone-200 transition-all cursor-pointer"
+      >
+        <div className="flex items-center justify-between mb-1">
+          <h3 className="font-['Playfair_Display'] text-base text-stone-900">
+            Combinations
+          </h3>
+          {combinationsUnlocked ? (
+            <span className="text-stone-300 text-xs">Unlocked</span>
+          ) : (
+            <span className="flex items-center gap-1 text-stone-300 text-xs">
+              <Lock size={12} />
+              {completedSubtasks}/{totalSubtasks}
+            </span>
+          )}
+        </div>
+        <p className="text-stone-500 text-xs leading-relaxed">
+          Cross-dimension practices — the heart of your training
+        </p>
+      </button>
     </div>
   );
 }
