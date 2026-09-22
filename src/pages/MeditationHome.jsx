@@ -2,6 +2,8 @@
 // 4 navigation cards: the 3 dimensions + Combinations. Each opens that
 // item's micro-task list. Combinations shows its lock state but remains
 // tappable — locked items are previewable inside (design §5.1).
+// Tao Echo lives on the list screens, not here (§2.2).
+// When all sub-tasks are complete, a Harvest entry appears.
 
 import { useNavigate } from 'react-router-dom';
 import { Lock } from 'lucide-react';
@@ -83,6 +85,24 @@ export default function MeditationHome() {
           Cross-dimension practices — the heart of your training
         </p>
       </button>
+
+      {/* Sub-task Harvest — unlocked with all sub-tasks complete */}
+      {combinationsUnlocked && (
+        <button
+          onClick={() => navigate('/meditate/harvest/subtasks')}
+          className="mt-3 bg-white rounded-xl p-4 text-left border border-stone-100 shadow-sm hover:shadow-md hover:border-stone-200 transition-all cursor-pointer"
+        >
+          <div className="flex items-center justify-between mb-1">
+            <h3 className="font-['Playfair_Display'] text-base text-stone-900">
+              Harvest
+            </h3>
+            <span className="text-stone-300 text-xs">What actually changed?</span>
+          </div>
+          <p className="text-stone-500 text-xs leading-relaxed">
+            Record what changed after completing all sub-tasks
+          </p>
+        </button>
+      )}
     </div>
   );
 }

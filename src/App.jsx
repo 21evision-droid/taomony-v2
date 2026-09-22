@@ -14,7 +14,6 @@ import MeditationDimension from './pages/MeditationDimension';
 import MeditationSubtask from './pages/MeditationSubtask';
 import MeditationCombinations from './pages/MeditationCombinations';
 import MeditationCombination from './pages/MeditationCombination';
-import TaoEchoView from './pages/TaoEchoView';
 import HarvestView from './pages/HarvestView';
 import Profile from './pages/Profile';
 import Sleep from './pages/Sleep';
@@ -39,9 +38,8 @@ function App() {
             <Route path="meditate/dimension/:slug" element={<MeditationDimension />} />
             <Route path="meditate/subtask/:id" element={<MeditationSubtask />} />
             <Route path="meditate/combinations" element={<MeditationCombinations />} />
-            <Route path="meditate/combination/:id/tao-echo" element={<TaoEchoView />} />
-            <Route path="meditate/combination/:id/harvest" element={<HarvestView />} />
             <Route path="meditate/combination/:id" element={<MeditationCombination />} />
+            <Route path="meditate/harvest/:tier" element={<HarvestView />} />
             <Route path="sleep" element={<Sleep />} />
             <Route path="tao-weight" element={<TaoWeight />} />
             <Route path="harmony-resonance" element={<HarmonyResonance />} />

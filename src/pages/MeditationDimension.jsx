@@ -11,6 +11,7 @@ import {
 } from '../data/meditationMock';
 import { isUnitComplete } from '../data/meditationStore';
 import HelpModal from '../components/meditation/HelpModal';
+import TaoEchoCard from '../components/meditation/TaoEchoCard';
 
 export default function MeditationDimension() {
   const { slug } = useParams();
@@ -110,6 +111,11 @@ export default function MeditationDimension() {
             </div>
           );
         })}
+      </div>
+
+      {/* Tao Echo — platform content below this dimension's sub-task list */}
+      <div className="mt-3">
+        <TaoEchoCard taoEcho={dimension.taoEcho} />
       </div>
 
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}

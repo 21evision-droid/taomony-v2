@@ -10,6 +10,7 @@ import {
   getSubtaskById,
   getDimensionBySlug,
   getSubtasksForDimension,
+  MEDITATION_SUBTASKS,
 } from '../data/meditationMock';
 import {
   beginAttempt,
@@ -56,15 +57,25 @@ export default function MeditationSubtask() {
 
   const nextInDim = subtasksInDim[myIndex + 1];
 
+  const doneSubtasks = MEDITATION_SUBTASKS.filter((s) =>
+    isUnitComplete('subtask', s.id)
+  ).length;
+  const totalSubtasks = MEDITATION_SUBTASKS.length;
+
   const handleStartPractice = () => {
-    if (!activeAttempt) {
+    if (!complete && !activeAttempt) {
       beginAttempt('subtask', subtask.id, subtask.repeatCount, subtask.windowDays);
     }
     setPlayerMode('practice');
   };
 
+  // Free practice after completion: no counting, no record change.
+  const handleReplay = () => setPlayerMode('free');
+
   const handleComplete = () => {
-    recordRepetition('subtask', subtask.id);
+    if (!complete) {
+      recordRepetition('subtask', subtask.id);
+    }
     setPlayerMode(null);
   };
 
@@ -126,15 +137,27 @@ export default function MeditationSubtask() {
           <span className="py-3 rounded-xl bg-emerald-50 text-emerald-600 text-sm font-medium text-center">
             Practice complete
           </span>
+          <p className="text-stone-400 text-xs text-center leading-relaxed">
+            Complete all sub-tasks to unlock Combinations ({doneSubtasks}/
+            {totalSubtasks})
+          </p>
+          <button
+            onClick={handleReplay}
+            className="py-3 rounded-xl border border-stone-200 text-stone-600 text-sm font-medium hover:bg-stone-50 transition-colors cursor-pointer"
+          >
+            Practice again
+          </button>
           <button
             onClick={() =>
               navigate(
-                nextInDim ? `/meditate/subtask/${nextInDim.id}` : '/meditate'
+                nextInDim
+                  ? `/meditate/subtask/${nextInDim.id}`
+                  : '/meditate/harvest/subtasks'
               )
             }
             className="py-3.5 rounded-xl bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors cursor-pointer"
           >
-            {nextInDim ? `Continue to ${nextInDim.title}` : 'Continue'}
+            {nextInDim ? `Continue to ${nextInDim.title}` : 'Continue to Harvest'}
           </button>
         </div>
       ) : isCurrent ? (

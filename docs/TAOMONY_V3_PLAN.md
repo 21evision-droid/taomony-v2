@@ -208,9 +208,9 @@ The implementation AI's responsibility at that stage is to implement the provide
 
 **Content sources:** Inner Alchemy (小周天, 太乙金华宗旨, etc.) is the advanced tier, entered only after all micro-tasks are complete.
 
-**Practice flow:** Practice → **Tao Echo** → **Harvest** → **Resonance** (optional share). (Insight is removed from the Meditation flow.)
+**Practice flow:** Practice → **Harvest** → **Resonance** (optional share). Harvest is tier-level: one for all sub-tasks, one for all combinations. (Insight is removed from the Meditation flow.)
 
-**Tao Echo:** One Combination → One **Tao Echo**, containing (1) one original Tao Te Ching passage, (2) its chapter reference, and (3) an **Implication** — a concise explanation of how the passage maps onto the specific practice. Tao Echo is distinct from Harvest. (Authoritative definition lives in `MEDITATION_MODULE_SPEC.md`.)
+**Tao Echo:** Platform-provided content — (1) one original Tao Te Ching passage, (2) its chapter reference, and (3) an **Implication** — a concise explanation of how the passage maps onto the specific practice. Tao Echo is distinct from Harvest, is displayed below the micro-task list on the dimension and combinations screens (labeled "Tao Echo"), and is not user-filled. (Authoritative definition lives in `MEDITATION_MODULE_SPEC.md`.)
 
 **Content philosophy:** the Meditation module is based on **Taoist meditation** decomposed into Sub-tasks and Combinations (Breathing, Mind, Awareness), not a conventional library of guided meditations. Tao Te Ching passages map to practices only where the conceptual relationship is meaningful. Actual Tao Echo mappings, Harvest content, and silent demonstration videos are designed and supplied by the product/content team later.
 

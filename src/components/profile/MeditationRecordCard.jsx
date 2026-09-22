@@ -22,9 +22,8 @@ function MeditationRecordCard({ kind, unitId, record }) {
   const dimension = subtask
     ? MEDITATION_DIMENSIONS.find((d) => d.id === subtask.dimensionId)
     : null;
-  const harvest = combination
-    ? Boolean(getHarvest(unitId, record.attemptNumber))
-    : false;
+  const tier = kind === 'combination' ? 'combinations' : 'subtasks';
+  const harvest = Boolean(getHarvest(tier));
 
   const fmt = (iso) =>
     new Date(iso).toLocaleDateString('en-US', {
@@ -48,7 +47,7 @@ function MeditationRecordCard({ kind, unitId, record }) {
         <span className="text-stone-300">{fmt(record.closedAt)}</span>
         {harvest && (
           <Link
-            to={`/meditate/combination/${unitId}/harvest`}
+            to={`/meditate/harvest/${tier}`}
             className="ml-auto text-stone-500 underline hover:text-stone-900 transition-colors"
           >
             View Harvest

@@ -1,6 +1,6 @@
 # Taomony Meditation Module — Product Constitution
 
-> **Status:** Approved (2026-09-19) — synced with `docs/superpowers/specs/2026-09-19-meditation-video-architecture-design.md`
+> **Status:** Approved (2026-09-19), updated 2026-09-22 (replay / Tao Echo on cards / tier-level Harvest) — synced with `docs/superpowers/specs/2026-09-19-meditation-video-architecture-design.md`
 > **Role:** Single source of truth for all Meditation module implementation.
 > All data structures, content, UI design, component implementation, and Supabase schema must reference this document (and the video-architecture design) as the highest authority.
 > **If code conflicts with this SPEC, fix the code — not the principles.**
@@ -52,23 +52,24 @@ Inner Alchemy (deferred)
 - **Combination** — a cross-dimension practice unit with its **own integrated video** (e.g., "Natural Breath → Observe Thoughts → Open Awareness"). The *most important* part of training.
 - Both layers carry their own **Practice Cycle** (§5). Sub-tasks must be completed first (basic → important).
 
-### 2.2 Tao Echo — The Bridge Back to the Tao
+### 2.2 Tao Echo — Platform Content on Every Card
 
-Each **Combination** is paired with exactly one **Tao Echo**:
+Every **dimension** and every **combination** carries exactly one **Tao Echo**:
 
-> One Combination → One Tao Echo
+> One card (dimension or combination) → One Tao Echo
 
 A Tao Echo contains only:
 
-1. **Original Tao Te Ching passage** — one relevant original passage. Normally only one passage per Combination; do not overload a practice with multiple quotations.
+1. **Original Tao Te Ching passage** — one relevant original passage. Normally only one passage per card; do not overload a practice with multiple quotations.
 2. **Chapter reference** — the relevant *Tao Te Ching* chapter.
 3. **Implication** — a concise explanation of how the abstract passage maps onto the specific practice. Not a general philosophical essay and not a replacement for the Tao Perspective used in Learning.
 
+**Tao Echo content is supplied by the platform, never written by the user.** It is displayed on the micro-task **list screens** — below a dimension's sub-task cards and below each combination card — labeled **"Tao Echo"**. It is **not** shown on the first-level navigation (home), and each echo's content is different. Tao Echo is not a separate page/view.
+
 Tao Echo is the meditation module's link back to the source text. It is distinct from **Harvest** ("What actually changed?").
 
-**Flow (Combination layer only):** Practice → **Tao Echo** → **Harvest** → (optional) **Share to Resonance**.
+**Flow:** Practice → **Harvest** → (optional) **Share to Resonance**. Harvest is **tier-level** (§2.4): one Harvest for all sub-tasks, one for all combinations — not per-unit.
 
-- Sub-tasks have **no reflection** — completing N repetitions is the whole task.
 - **Insight is removed** from Meditation — Harvest plus the optional Resonance share already capture the user's discovery. There is no separate "What did you discover?" step, and no execution-result status (Explored / Partially / Not Sure).
 
 > Cross-module: Meditation participates in the universal **Practice → Harvest → Discovery → Resonance** loop defined in `TAOMONY_V3_PLAN.md`. Harvest content is curated later (framework first, not invented now).
@@ -98,6 +99,15 @@ Tao Echo is the meditation module's link back to the source text. It is distinct
 
 - Inherently **not silent**: it breaks silence by design.
 - Its current implementation is discarded and rebuilt — see §7.
+
+### 2.4 Harvest — Tier-Level (One per Completed Tier)
+
+Harvest ("What actually changed?") is earned **once per completed tier**, not per unit:
+
+- **Sub-tasks tier:** completing all sub-tasks (across all 3 dimensions) qualifies the user for one Harvest.
+- **Combinations tier:** completing all combinations qualifies the user for a second Harvest.
+
+After a tier's Harvest, the user may optionally share it to Resonance. Harvest content (questions / options / interpretation per tier) is curated later by the content team — framework first, content is not invented now.
 
 ---
 
@@ -144,16 +154,17 @@ Tao Echo is the meditation module's link back to the source text. It is distinct
 - **Video duration = practice duration.**
 - **Completion = full playback in practice mode.** One repetition counts when the practice video plays through to its end; skipping ahead does not count a repetition until the end is reached.
 
-### 6.1 Preview vs Practice (dual-entry)
+### 6.1 Preview vs Practice vs Free Practice
 
-| | Preview (free browsing) | Practice (executing) |
-|---|---|---|
-| Access | Any video, any time | "Start Practice" on the currently advanceable unit |
-| Player label | "Preview" | "Practicing · Rep N/M" |
-| Counting | Does not count toward the cycle | Full playback counts as 1 repetition |
-| Gating | None | Locked by progression rules (§7) |
+| | Preview (free browsing) | Practice (executing) | Free practice (replay) |
+|---|---|---|---|
+| Access | Any video, any time | "Start Practice" on the currently advanceable unit | "Practice again" on a completed unit |
+| Player label | "Preview" | "Practicing · Rep N/M" | "Free practice" |
+| Counting | Does not count toward the cycle | Full playback counts as 1 repetition | Does not count; no record change |
+| Gating | None | Locked by progression rules (§7) | Only after the unit's cycle is complete |
 
 - All videos (sub-tasks and combinations) are freely previewable in full, even while locked.
+- **Free practice (replay):** after a unit's cycle completes, the user may replay it freely — no counting, no record change. Before replaying, the user is told they must complete all [tier] practices to advance to the next step (all sub-tasks to unlock Combinations; all combinations to unlock Inner Alchemy).
 - The player always shows the current mode label, so the user always knows which state they are in.
 
 ### 6.2 Entry Instructions (first-time help)
@@ -168,7 +179,7 @@ The entire existing meditation **code** is **discarded and rebuilt** — the new
 
 Legacy files (removed in the 2026-09 rebuild): `src/pages/Meditate.jsx` and `src/components/meditate/*` (CourseLibrary, MemberPracticesPortal, MemberPracticesView, VideoPlayerModal, CommentsSection, StageTabs, useMemberPractices).
 
-New implementation: `src/pages/MeditationHome.jsx`, `MeditationDimension.jsx`, `MeditationSubtask.jsx`, `MeditationCombinations.jsx`, `MeditationCombination.jsx`, `TaoEchoView.jsx`, `HarvestView.jsx`; `src/components/meditation/MeditationVideoPlayer.jsx`, `HelpModal.jsx`; `src/components/profile/MeditationRecordCard.jsx`; `src/data/meditationMock.js`, `meditationStore.js`, `meditationHarvestStore.js`; `supabase/migrations/20260920000000_create_meditation_tables.sql`.
+New implementation: `src/pages/MeditationHome.jsx`, `MeditationDimension.jsx`, `MeditationSubtask.jsx`, `MeditationCombinations.jsx`, `MeditationCombination.jsx`, `HarvestView.jsx`; `src/components/meditation/MeditationVideoPlayer.jsx`, `HelpModal.jsx`; `src/components/profile/MeditationRecordCard.jsx`; `src/data/meditationMock.js`, `meditationStore.js`, `meditationHarvestStore.js`; `supabase/migrations/20260920000000_create_meditation_tables.sql`.
 
 ---
 
@@ -184,8 +195,9 @@ New implementation: `src/pages/MeditationHome.jsx`, `MeditationDimension.jsx`, `
 | **Inner Alchemy** | The advanced tier (小周天, 太乙金华宗旨, etc.), unlocked only after all micro-tasks are complete. | advanced course |
 | **Preview** | Free viewing of any video; does not count. | — |
 | **Practice** | Gated execution; full playback = 1 repetition. | — |
-| **Tao Echo** | One Combination → one Tao Echo (passage + chapter + Implication). | quote card |
-| **Harvest** | "What actually changed?" — structured, at combination completion. | — |
+| **Tao Echo** | Platform-provided content shown below a dimension's or combination's micro-task list, labeled "Tao Echo" (passage + chapter + Implication). | quote card |
+| **Free practice** | Replay of a completed unit; no counting, no record change. | — |
+| **Harvest** | "What actually changed?" — structured, once per completed tier (sub-tasks / combinations). | — |
 | **Collective Meditation** | The group practice pillar: virtual synchronous. Long-form immersive content; experience over practice. Inherently not silent. | group session, live class |
 | ~~Insight~~ | Removed from Meditation. | — |
 
@@ -195,7 +207,7 @@ New implementation: `src/pages/MeditationHome.jsx`, `MeditationDimension.jsx`, `
 
 - Inner Alchemy: unit format, video, cycle, reflection — deferred.
 - Collective meditation: room-numbering scheme, seat cap behavior, interaction beyond shared presence — deferred (separate zone).
-- Harvest content: questions/options/interpretation per combination — supplied by content team later.
+- Harvest content: questions/options/interpretation per tier (sub-tasks / combinations) — supplied by content team later.
 - Video content: all sub-task and combination silent demonstration videos — supplied later.
 - Entry UI: wheel / Bagua pattern (Learning-module alignment) — separate implementation, decoupled from the practice engine.
 
@@ -227,3 +239,6 @@ New implementation: `src/pages/MeditationHome.jsx`, `MeditationDimension.jsx`, `
 | 20 | Cycle | Per-unit N/X; early completion; timeout = gentle expired (append-only, old record preserved); no bundle; no rewards; supersedes #5, #6 | 2026-09-19 |
 | 21 | Video | Video = practice (silent demo, no narration); duration = practice; full playback = 1 rep; preview vs practice dual-entry; supersedes #7, #8 | 2026-09-19 |
 | 22 | Reflection | Combination layer only: Tao Echo → Harvest → (optional) Resonance; Insight removed; no execution-result status; supersedes #16 | 2026-09-19 |
+| 23 | Replay | Completed units are replayable as Free practice — no counting, no record change; a note explains the tier gate before replay | 2026-09-22 |
+| 24 | Tao Echo | Platform-provided content displayed below the micro-task list on the dimension and combinations screens (not user-filled, not on the home level); each echo's content differs | 2026-09-22 |
+| 25 | Harvest | Tier-level: one Harvest for all sub-tasks, one for all combinations; replaces per-combination Harvest | 2026-09-22 |

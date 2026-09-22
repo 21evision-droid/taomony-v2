@@ -5,7 +5,11 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Lock } from 'lucide-react';
-import { getCombinationById, MEDITATION_SUBTASKS } from '../data/meditationMock';
+import {
+  getCombinationById,
+  getActiveCombinations,
+  MEDITATION_SUBTASKS,
+} from '../data/meditationMock';
 import {
   beginAttempt,
   recordRepetition,
@@ -40,8 +44,15 @@ export default function MeditationCombination() {
     ? combination.repeatCount
     : activeAttempt?.completedReps || 0;
 
+  const combinations = getActiveCombinations();
+  const doneCombos = combinations.filter((c) =>
+    isUnitComplete('combination', c.id)
+  ).length;
+  const totalCombos = combinations.length;
+  const allCombosComplete = doneCombos === totalCombos;
+
   const handleStartPractice = () => {
-    if (!activeAttempt) {
+    if (!complete && !activeAttempt) {
       beginAttempt(
         'combination',
         combination.id,
@@ -52,8 +63,13 @@ export default function MeditationCombination() {
     setPlayerMode('practice');
   };
 
+  // Free practice after completion: no counting, no record change.
+  const handleReplay = () => setPlayerMode('free');
+
   const handleComplete = () => {
-    recordRepetition('combination', combination.id);
+    if (!complete) {
+      recordRepetition('combination', combination.id);
+    }
     setPlayerMode(null);
   };
 
@@ -111,14 +127,35 @@ export default function MeditationCombination() {
       </div>
 
       {complete ? (
-        <button
-          onClick={() =>
-            navigate(`/meditate/combination/${combination.id}/tao-echo`)
-          }
-          className="py-3.5 rounded-xl bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors cursor-pointer"
-        >
-          Continue to Tao Echo
-        </button>
+        <div className="flex flex-col gap-2">
+          <span className="py-3 rounded-xl bg-emerald-50 text-emerald-600 text-sm font-medium text-center">
+            Practice complete
+          </span>
+          <p className="text-stone-400 text-xs text-center leading-relaxed">
+            Complete all combinations to unlock Inner Alchemy ({doneCombos}/
+            {totalCombos})
+          </p>
+          <button
+            onClick={handleReplay}
+            className="py-3 rounded-xl border border-stone-200 text-stone-600 text-sm font-medium hover:bg-stone-50 transition-colors cursor-pointer"
+          >
+            Practice again
+          </button>
+          <button
+            onClick={() =>
+              navigate(
+                allCombosComplete
+                  ? '/meditate/harvest/combinations'
+                  : '/meditate/combinations'
+              )
+            }
+            className="py-3.5 rounded-xl bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors cursor-pointer"
+          >
+            {allCombosComplete
+              ? 'Continue to Harvest'
+              : 'Back to Combinations'}
+          </button>
+        </div>
       ) : unlocked ? (
         <button
           onClick={handleStartPractice}

@@ -1,61 +1,69 @@
-// HarvestView — Harvest reflection stage (design §8).
-// "What actually changed?" — structured, preset options. Content is curated
-// later by the content team (design §13); this view renders the framework
-// (prompt + options + optional Resonance share) and shows a "being curated"
-// placeholder when no options exist yet.
+// HarvestView — tier-level Harvest stage (design §8).
+// "What actually changed?" — structured, preset options. One Harvest per
+// completed tier: 'subtasks' (all 9 sub-tasks done) or 'combinations'
+// (all combinations done). Content is curated later by the content team
+// (design §13); this view renders the framework (prompt + options +
+// optional Resonance share) and shows a "being curated" placeholder when
+// no options exist yet.
 
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Wheat } from 'lucide-react';
-import { getCombinationById } from '../data/meditationMock';
-import { getCompletedAttempt } from '../data/meditationStore';
 import {
   getHarvest,
   toggleHarvestOption,
   submitHarvest,
 } from '../data/meditationHarvestStore';
 
+const TIERS = {
+  subtasks: {
+    title: 'Sub-task Practice',
+    backTo: '/meditate',
+    backLabel: 'Meditation',
+  },
+  combinations: {
+    title: 'Combination Practice',
+    backTo: '/meditate/combinations',
+    backLabel: 'Combinations',
+  },
+};
+
 export default function HarvestView() {
-  const { id } = useParams();
+  const { tier } = useParams();
   const navigate = useNavigate();
-  const combination = getCombinationById(id);
+  const config = TIERS[tier];
 
   // Harvest options are supplied later (design §13). The framework stores
-  // selections keyed by attempt; until options exist, none are rendered.
-  const options = combination?.harvestOptions || [];
-  const attempt = getCompletedAttempt('combination', id);
+  // selections keyed by tier; until options exist, none are rendered.
+  const options = [];
 
-  const [selected, setSelected] = useState(
-    attempt ? getHarvest(id, attempt.attemptNumber)?.answers || [] : []
-  );
+  const [selected, setSelected] = useState(getHarvest(tier)?.answers || []);
   const [shared, setShared] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState(Boolean(getHarvest(tier)));
 
-  if (!combination) {
+  if (!config) {
     return (
       <div className="flex flex-col min-h-full bg-[#f5efe6] px-5 pt-12 pb-6">
         <Link to="/meditate" className="text-stone-400 text-xs hover:text-stone-600 transition-colors">
           &larr; Meditation
         </Link>
-        <p className="text-stone-400 text-sm mt-4">Combination not found.</p>
+        <p className="text-stone-400 text-sm mt-4">Harvest not found.</p>
       </div>
     );
   }
 
   const handleSubmit = () => {
-    if (attempt) {
-      submitHarvest(id, attempt.attemptNumber, shared);
-    }
+    submitHarvest(tier, shared);
     setSubmitted(true);
   };
 
   return (
     <div className="flex flex-col min-h-full bg-[#f5efe6] px-5 pt-12 pb-6">
       <Link
-        to={`/meditate/combination/${combination.id}/tao-echo`}
+        to={config.backTo}
         className="text-stone-400 text-xs hover:text-stone-600 transition-colors"
       >
-        &larr; Tao Echo
+        &larr; {config.backLabel}
       </Link>
 
       <div className="mt-4 mb-6">
@@ -65,6 +73,7 @@ export default function HarvestView() {
         <h1 className="font-['Playfair_Display'] text-xl text-stone-900 mb-2">
           What actually changed?
         </h1>
+        <p className="text-stone-500 text-sm">{config.title}</p>
       </div>
 
       {options.length === 0 ? (
@@ -74,7 +83,7 @@ export default function HarvestView() {
             Harvest
           </p>
           <p className="text-stone-400 text-sm leading-relaxed">
-            Harvest options for this combination are being curated.
+            Harvest options for this practice are being curated.
           </p>
         </div>
       ) : (
@@ -90,10 +99,7 @@ export default function HarvestView() {
                   type="checkbox"
                   checked={isSelected}
                   onChange={() =>
-                    attempt &&
-                    setSelected(
-                      toggleHarvestOption(id, attempt.attemptNumber, opt.id)
-                    )
+                    setSelected(toggleHarvestOption(tier, opt.id))
                   }
                   className="mt-0.5 size-4 accent-stone-900"
                 />
@@ -125,10 +131,10 @@ export default function HarvestView() {
             Harvest recorded.
           </p>
           <button
-            onClick={() => navigate('/meditate/combinations')}
+            onClick={() => navigate(config.backTo)}
             className="py-3.5 w-full rounded-xl bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors cursor-pointer"
           >
-            Back to Combinations
+            Back to {config.backLabel}
           </button>
         </div>
       ) : (

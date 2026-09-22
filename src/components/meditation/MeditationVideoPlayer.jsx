@@ -11,9 +11,9 @@
 //   title           — unit title
 //   videoUrl        — string | null (real videos supplied later)
 //   durationSeconds — practice duration (video duration = practice duration)
-//   mode            — 'preview' | 'practice'
+//   mode            — 'preview' | 'practice' | 'free'
 //   repDisplay      — string shown only in practice mode (e.g. 'Rep 1/3')
-//   onComplete      — () => void, practice only, fired once at end of playback
+//   onComplete      — () => void, practice/free only, fired once at playback end
 //   onClose         — () => void
 
 import { useEffect, useRef, useState } from 'react';
@@ -32,6 +32,7 @@ export default function MeditationVideoPlayer({
   const firedRef = useRef(false);
 
   const isPractice = mode === 'practice';
+  const isFree = mode === 'free';
 
   // Duration-based stand-in for the silent demonstration video.
   useEffect(() => {
@@ -40,10 +41,11 @@ export default function MeditationVideoPlayer({
     return () => clearInterval(timer);
   }, [videoUrl, durationSeconds]);
 
-  // Fire completion exactly once when playback reaches the end in practice mode.
+  // Fire completion exactly once when playback reaches the end in practice or
+  // free mode. Free practice does not count toward the cycle (caller guards).
   useEffect(() => {
     if (
-      isPractice &&
+      (isPractice || isFree) &&
       !videoUrl &&
       durationSeconds > 0 &&
       elapsed >= durationSeconds &&
@@ -53,10 +55,10 @@ export default function MeditationVideoPlayer({
       onComplete?.();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [elapsed, isPractice]);
+  }, [elapsed, isPractice, isFree]);
 
   const handleEnded = () => {
-    if (isPractice && !firedRef.current) {
+    if ((isPractice || isFree) && !firedRef.current) {
       firedRef.current = true;
       onComplete?.();
     }
@@ -81,7 +83,11 @@ export default function MeditationVideoPlayer({
         {/* Header — mode label always visible (§5.1) */}
         <div className="flex items-center justify-between px-4 py-3.5">
           <span className="text-sm font-semibold text-[#faf6ef]">
-            {isPractice ? `Practicing · ${repDisplay}` : 'Preview'}
+            {isPractice
+              ? `Practicing · ${repDisplay}`
+              : isFree
+                ? 'Free practice'
+                : 'Preview'}
           </span>
           <button
             onClick={onClose}

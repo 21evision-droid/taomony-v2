@@ -16,6 +16,13 @@ export const MEDITATION_DIMENSIONS = [
     title: 'Breathing',
     description: 'Observe, regulate, and release the breath',
     orderIndex: 1,
+    taoEcho: {
+      passage:
+        'Can you keep the breath soft as a child and let it move without forcing?',
+      chapter: 10,
+      implication:
+        'Breath practice returns the body to its original, effortless rhythm.',
+    },
   },
   {
     id: 'mind',
@@ -23,6 +30,13 @@ export const MEDITATION_DIMENSIONS = [
     title: 'Mind',
     description: 'Observe thoughts, practice non-attachment, return to stillness',
     orderIndex: 2,
+    taoEcho: {
+      passage:
+        'Block the openings, shut the doors, and the world will not wear you out.',
+      chapter: 52,
+      implication:
+        'Stillness is what remains when the mind stops chasing what passes through it.',
+    },
   },
   {
     id: 'awareness',
@@ -30,6 +44,13 @@ export const MEDITATION_DIMENSIONS = [
     title: 'Awareness',
     description: 'Open observation of sensation, sound, space, and being',
     orderIndex: 3,
+    taoEcho: {
+      passage:
+        'The great Tao flows everywhere, reaching left and right alike.',
+      chapter: 34,
+      implication:
+        'Open awareness receives all things without grasping or rejecting any.',
+    },
   },
 ];
 
