@@ -1,6 +1,6 @@
 # Taomony Meditation Module — Product Constitution
 
-> **Status:** Approved (2026-09-19), updated 2026-09-22 (replay / Tao Echo on cards / tier-level Harvest) — synced with `docs/superpowers/specs/2026-09-19-meditation-video-architecture-design.md`
+> **Status:** Approved (2026-09-19), updated 2026-09-23 (replay / Tao Echo below micro-task list / tier-level Harvest + Reflection) — synced with `docs/superpowers/specs/2026-09-19-meditation-video-architecture-design.md`
 > **Role:** Single source of truth for all Meditation module implementation.
 > All data structures, content, UI design, component implementation, and Supabase schema must reference this document (and the video-architecture design) as the highest authority.
 > **If code conflicts with this SPEC, fix the code — not the principles.**
@@ -52,7 +52,7 @@ Inner Alchemy (deferred)
 - **Combination** — a cross-dimension practice unit with its **own integrated video** (e.g., "Natural Breath → Observe Thoughts → Open Awareness"). The *most important* part of training.
 - Both layers carry their own **Practice Cycle** (§5). Sub-tasks must be completed first (basic → important).
 
-### 2.2 Tao Echo — Platform Content on Every Card
+### 2.2 Tao Echo — Platform Content Below the Micro-Task List
 
 Every **dimension** and every **combination** carries exactly one **Tao Echo**:
 
@@ -68,9 +68,9 @@ A Tao Echo contains only:
 
 Tao Echo is the meditation module's link back to the source text. It is distinct from **Harvest** ("What actually changed?").
 
-**Flow:** Practice → **Harvest** → (optional) **Share to Resonance**. Harvest is **tier-level** (§2.4): one Harvest for all sub-tasks, one for all combinations — not per-unit.
+**Flow:** Practice → **Harvest** → **Reflection** → (optional) **Share to Resonance**. Harvest is **tier-level** (§2.4): one Harvest for all sub-tasks, one for all combinations — not per-unit. After the Harvest, the user continues into a **Reflection Space** that mirrors Learning's reflection architecture — a free-form "Your Reflection" that auto-publishes to Resonance on close unless sharing is unchecked (§2.5).
 
-- **Insight is removed** from Meditation — Harvest plus the optional Resonance share already capture the user's discovery. There is no separate "What did you discover?" step, and no execution-result status (Explored / Partially / Not Sure).
+- **Insight is removed** from Meditation — the Reflection step (plus the optional Resonance share) already captures the user's discovery. There is no separate "What did you discover?" step, and no execution-result status (Explored / Partially / Not Sure).
 
 > Cross-module: Meditation participates in the universal **Practice → Harvest → Discovery → Resonance** loop defined in `TAOMONY_V3_PLAN.md`. Harvest content is curated later (framework first, not invented now).
 
@@ -107,7 +107,14 @@ Harvest ("What actually changed?") is earned **once per completed tier**, not pe
 - **Sub-tasks tier:** completing all sub-tasks (across all 3 dimensions) qualifies the user for one Harvest.
 - **Combinations tier:** completing all combinations qualifies the user for a second Harvest.
 
-After a tier's Harvest, the user may optionally share it to Resonance. Harvest content (questions / options / interpretation per tier) is curated later by the content team — framework first, content is not invented now.
+After a tier's Harvest, the user continues into a **Reflection Space** (§2.5) — a free-form "Your Reflection" mirroring Learning's reflection architecture — which may optionally be shared to Resonance. Harvest content (questions / options / interpretation per tier) is curated later by the content team — framework first, content is not invented now.
+
+### 2.5 Reflection — Free-Form "Your Reflection" (Mirrors Learning)
+
+After a tier's Harvest, the user enters a **Reflection Space** — the same free-form reflection step as Learning's *Your Reflection*. It is not scored, not judged, and entirely optional. On close, the reflection auto-publishes to Resonance unless the user unchecked sharing (reusing the shared `reflections` store with `source: 'meditate'`).
+
+- There is no "Insight" step and no execution-result status (Explored / Partially / Not Sure).
+- This mirrors Learning's reflection architecture (`JourneyReflection` + `ReflectionSpace`), not a new evaluation mechanism.
 
 ---
 
@@ -179,7 +186,7 @@ The entire existing meditation **code** is **discarded and rebuilt** — the new
 
 Legacy files (removed in the 2026-09 rebuild): `src/pages/Meditate.jsx` and `src/components/meditate/*` (CourseLibrary, MemberPracticesPortal, MemberPracticesView, VideoPlayerModal, CommentsSection, StageTabs, useMemberPractices).
 
-New implementation: `src/pages/MeditationHome.jsx`, `MeditationDimension.jsx`, `MeditationSubtask.jsx`, `MeditationCombinations.jsx`, `MeditationCombination.jsx`, `HarvestView.jsx`; `src/components/meditation/MeditationVideoPlayer.jsx`, `HelpModal.jsx`; `src/components/profile/MeditationRecordCard.jsx`; `src/data/meditationMock.js`, `meditationStore.js`, `meditationHarvestStore.js`; `supabase/migrations/20260920000000_create_meditation_tables.sql`.
+New implementation: `src/pages/MeditationHome.jsx`, `MeditationDimension.jsx`, `MeditationSubtask.jsx`, `MeditationCombinations.jsx`, `MeditationCombination.jsx`, `HarvestView.jsx`, `MeditationReflection.jsx`; `src/components/meditation/MeditationVideoPlayer.jsx`, `HelpModal.jsx`, `TaoEchoCard.jsx`; `src/components/profile/MeditationRecordCard.jsx`; `src/data/meditationMock.js`, `meditationStore.js`, `meditationHarvestStore.js`; `supabase/migrations/20260920000000_create_meditation_tables.sql`.
 
 ---
 
@@ -198,6 +205,7 @@ New implementation: `src/pages/MeditationHome.jsx`, `MeditationDimension.jsx`, `
 | **Tao Echo** | Platform-provided content shown below a dimension's or combination's micro-task list, labeled "Tao Echo" (passage + chapter + Implication). | quote card |
 | **Free practice** | Replay of a completed unit; no counting, no record change. | — |
 | **Harvest** | "What actually changed?" — structured, once per completed tier (sub-tasks / combinations). | — |
+| **Reflection** | Free-form "Your Reflection" after a tier's Harvest; mirrors Learning's reflection architecture; optional Resonance share on close. | Insight |
 | **Collective Meditation** | The group practice pillar: virtual synchronous. Long-form immersive content; experience over practice. Inherently not silent. | group session, live class |
 | ~~Insight~~ | Removed from Meditation. | — |
 
@@ -242,3 +250,4 @@ New implementation: `src/pages/MeditationHome.jsx`, `MeditationDimension.jsx`, `
 | 23 | Replay | Completed units are replayable as Free practice — no counting, no record change; a note explains the tier gate before replay | 2026-09-22 |
 | 24 | Tao Echo | Platform-provided content displayed below the micro-task list on the dimension and combinations screens (not user-filled, not on the home level); each echo's content differs | 2026-09-22 |
 | 25 | Harvest | Tier-level: one Harvest for all sub-tasks, one for all combinations; replaces per-combination Harvest | 2026-09-22 |
+| 26 | Reflection | After a tier's Harvest, a free-form "Your Reflection" mirrors Learning's reflection architecture (`ReflectionSpace` + shared `reflections` store, `source: 'meditate'`); auto-publishes to Resonance on close unless sharing is unchecked | 2026-09-23 |

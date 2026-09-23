@@ -23,7 +23,7 @@ function MeditationRecordCard({ kind, unitId, record }) {
     ? MEDITATION_DIMENSIONS.find((d) => d.id === subtask.dimensionId)
     : null;
   const tier = kind === 'combination' ? 'combinations' : 'subtasks';
-  const harvest = Boolean(getHarvest(tier));
+  const harvest = getHarvest(tier).length > 0;
 
   const fmt = (iso) =>
     new Date(iso).toLocaleDateString('en-US', {

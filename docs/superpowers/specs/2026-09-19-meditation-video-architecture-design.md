@@ -154,16 +154,17 @@ Tao Echo is **platform content displayed below the micro-task list** — below a
 Harvest is earned **once per completed tier**, not per unit:
 
 ```
-Sub-tasks tier   → complete all sub-tasks    → one Harvest → (optional) Share to Resonance
-Combinations tier → complete all combinations → one Harvest → (optional) Share to Resonance
+Sub-tasks tier   → complete all sub-tasks    → one Harvest → Reflection → (optional) Share to Resonance
+Combinations tier → complete all combinations → one Harvest → Reflection → (optional) Share to Resonance
 ```
 
 - **Harvest** — "What actually changed?" Structured, preset, practice-specific options (content supplied later by the content team — framework only, no invented content).
-- **Share to Resonance** — optional. The Resonance entry is auto-constructed from module + practice + duration/cycle + Harvest.
+- **Reflection** — after the Harvest, the user enters a **Reflection Space**: a free-form "Your Reflection" mirroring Learning's reflection architecture (reuses Learning's `ReflectionSpace` + the shared `reflections` store with `source: 'meditate'`). It is not scored, not judged, and entirely optional.
+- **Share to Resonance** — optional. On closing the Reflection, the reflection auto-publishes to Resonance unless sharing is unchecked. The Resonance entry is auto-constructed from module + practice + duration/cycle + Harvest.
 
 **Insight is removed** from the Meditation flow:
 
-- There is no separate "What did you discover?" step — Harvest plus the optional Resonance share already capture the user's discovery.
+- There is no separate "What did you discover?" step — the Reflection step (plus the optional Resonance share) already captures the user's discovery.
 - There is also no execution-result status (Explored / Partially / Not Sure) — completion is compulsory under strict gating, so the result is always "complete" and needs no display.
 
 ---
@@ -185,6 +186,7 @@ Notes:
 - **Append-only attempts** implement "reopen = new record, old preserved". The active attempt is the latest `in_progress` row; a unit is complete when it has a `completed` attempt.
 - **Combination unlock** is derived: all sub-tasks have a `completed` attempt. No prerequisite junction table is needed.
 - **No Insight storage** — there is no insight column or table in Meditation.
+- **Reflection storage** — the Reflection is stored in the shared `reflections` table (Learning's store) with `source = 'meditate'`, not in a meditation-specific table.
 - **Profile records** are derived from `meditation_subtask_attempts` / `meditation_combination_attempts` (`status = completed`) plus `meditation_harvest_submissions`. No separate profile-storage table is needed.
 
 ---
@@ -198,7 +200,8 @@ Notes:
 | `/meditate/subtask/:id` | Sub-task: preview + practice + free-practice player (mode label), repetition progress, replay, gate note |
 | `/meditate/combinations` | Combination list (locked/unlocked), each card followed by its Tao Echo + combination Harvest entry once all combinations complete. All videos previewable. Same help button available. |
 | `/meditate/combination/:id` | Combination: preview + practice + free-practice player, repetition progress, replay, gate note |
-| `/meditate/harvest/:tier` | Tier-level Harvest (`subtasks` / `combinations`) → (optional) share to Resonance |
+| `/meditate/harvest/:tier` | Tier-level Harvest (`subtasks` / `combinations`) — structured "What actually changed?" → Continue to Reflection |
+| `/meditate/harvest/:tier/reflection` | Reflection Space after a tier's Harvest (free-form "Your Reflection") → (optional) share to Resonance |
 
 Mode-label UI (from §5.1):
 
@@ -244,6 +247,7 @@ Open point for the wheel design (not resolved here): how wheel-based entry coexi
 | **Tao Echo** | Platform-provided content shown below a dimension's or combination's micro-task list, labeled "Tao Echo" (passage + chapter + Implication). |
 | **Free practice** | Replay of a completed unit; no counting, no record change. |
 | **Harvest** | "What actually changed?" — structured, once per completed tier (sub-tasks / combinations). |
+| **Reflection** | Free-form "Your Reflection" after a tier's Harvest; mirrors Learning; optional Resonance share on close. |
 | ~~Insight~~ | Removed from Meditation. |
 
 ---
@@ -261,7 +265,7 @@ Open point for the wheel design (not resolved here): how wheel-based entry coexi
 
 `TAOMONY_V3_PLAN.md`:
 
-- §4.2 Meditation flow — `Micro Practice → Tao Echo → Harvest → Insight → Resonance` becomes `Micro Practice → Tao Echo → Harvest → Resonance` (Insight removed).
+- §4.2 Meditation flow — `Micro Practice → Tao Echo → Harvest → Insight → Resonance` becomes `Micro Practice → Tao Echo → Harvest → Reflection → Resonance` (Insight removed; Reflection mirrors Learning).
 
 ---
 

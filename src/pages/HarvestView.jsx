@@ -1,19 +1,17 @@
 // HarvestView — tier-level Harvest stage (design §8).
 // "What actually changed?" — structured, preset options. One Harvest per
-// completed tier: 'subtasks' (all 9 sub-tasks done) or 'combinations'
+// completed tier: 'subtasks' (all sub-tasks done) or 'combinations'
 // (all combinations done). Content is curated later by the content team
-// (design §13); this view renders the framework (prompt + options +
-// optional Resonance share) and shows a "being curated" placeholder when
-// no options exist yet.
+// (design §13); this view renders the framework (prompt + options) and
+// shows a "being curated" placeholder when no options exist yet.
+//
+// Harvest is not a dead-end: the user continues into the Reflection space
+// (mirroring Learning's reflection architecture).
 
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Wheat } from 'lucide-react';
-import {
-  getHarvest,
-  toggleHarvestOption,
-  submitHarvest,
-} from '../data/meditationHarvestStore';
+import { getHarvest, toggleHarvestOption } from '../data/meditationHarvestStore';
 
 const TIERS = {
   subtasks: {
@@ -37,9 +35,7 @@ export default function HarvestView() {
   // selections keyed by tier; until options exist, none are rendered.
   const options = [];
 
-  const [selected, setSelected] = useState(getHarvest(tier)?.answers || []);
-  const [shared, setShared] = useState(false);
-  const [submitted, setSubmitted] = useState(Boolean(getHarvest(tier)));
+  const [selected, setSelected] = useState(getHarvest(tier));
 
   if (!config) {
     return (
@@ -51,11 +47,6 @@ export default function HarvestView() {
       </div>
     );
   }
-
-  const handleSubmit = () => {
-    submitHarvest(tier, shared);
-    setSubmitted(true);
-  };
 
   return (
     <div className="flex flex-col min-h-full bg-[#f5efe6] px-5 pt-12 pb-6">
@@ -112,39 +103,12 @@ export default function HarvestView() {
         </div>
       )}
 
-      {/* Optional share to Resonance */}
-      <label className="flex items-center gap-3 bg-white rounded-xl p-4 border border-stone-100 shadow-sm mb-6 cursor-pointer">
-        <input
-          type="checkbox"
-          checked={shared}
-          onChange={(e) => setShared(e.target.checked)}
-          className="size-4 accent-stone-900"
-        />
-        <span className="text-sm text-stone-700">
-          Share this practice to Resonance
-        </span>
-      </label>
-
-      {submitted ? (
-        <div className="text-center">
-          <p className="text-emerald-600 text-sm font-medium mb-4">
-            Harvest recorded.
-          </p>
-          <button
-            onClick={() => navigate(config.backTo)}
-            className="py-3.5 w-full rounded-xl bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors cursor-pointer"
-          >
-            Back to {config.backLabel}
-          </button>
-        </div>
-      ) : (
-        <button
-          onClick={handleSubmit}
-          className="py-3.5 rounded-xl bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors cursor-pointer"
-        >
-          Complete Harvest
-        </button>
-      )}
+      <button
+        onClick={() => navigate(`/meditate/harvest/${tier}/reflection`)}
+        className="py-3.5 rounded-xl bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors cursor-pointer"
+      >
+        Continue to Reflection
+      </button>
     </div>
   );
 }

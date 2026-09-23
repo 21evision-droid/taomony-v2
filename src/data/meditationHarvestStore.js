@@ -1,14 +1,14 @@
 // ── Meditation Harvest Store (Phase 1 Mock) ────────────────
-// Stores tier-level Harvest submissions (one per completed tier:
-// 'subtasks' or 'combinations') and the optional Resonance-share flag.
-// Uses localStorage.
+// Stores tier-level Harvest selections (one per completed tier:
+// 'subtasks' or 'combinations'). Uses localStorage.
 //
 // Data shape:
-//   { [tier]: { answers: [optionId, ...], resonanceShared: bool, submittedAt: ISO } }
+//   { [tier]: [optionId, ...] }
 //
 // Harvest content (prompt + preset options) is curated later by the
 // content team (design §13). This store persists only which options were
-// selected and whether the practice was shared to Resonance.
+// selected. The Harvest flow continues into Reflection (a separate page),
+// so there is no submit/Resonance state here.
 //
 // Phase 2: replace with Supabase table meditation_harvest_submissions.
 
@@ -27,41 +27,22 @@ function write(data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-/** Get a Harvest submission for a tier, or null. */
+/** Get the selected option ids for a tier (empty array when none). */
 export function getHarvest(tier) {
-  return read()[tier] || null;
+  return read()[tier] || [];
 }
 
 /**
  * Toggle a Harvest option id on/off for a tier.
- * Returns the updated answers array.
+ * Returns the updated option-id array.
  */
 export function toggleHarvestOption(tier, optionId) {
   const data = read();
-  const current = data[tier]?.answers || [];
-  const answers = current.includes(optionId)
+  const current = data[tier] || [];
+  const next = current.includes(optionId)
     ? current.filter((id) => id !== optionId)
     : [...current, optionId];
-  data[tier] = {
-    answers,
-    resonanceShared: data[tier]?.resonanceShared || false,
-  };
+  data[tier] = next;
   write(data);
-  return answers;
-}
-
-/**
- * Submit the Harvest for a tier, optionally shared to Resonance.
- * Returns the saved submission.
- */
-export function submitHarvest(tier, resonanceShared) {
-  const data = read();
-  const submission = {
-    answers: data[tier]?.answers || [],
-    resonanceShared,
-    submittedAt: new Date().toISOString(),
-  };
-  data[tier] = submission;
-  write(data);
-  return submission;
+  return next;
 }
