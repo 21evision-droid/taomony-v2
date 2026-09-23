@@ -122,7 +122,6 @@ The platform auto-constructs the Resonance entry from the context already genera
 * Source module
 * Practice / Journey / Experiment
 * Practice duration or cycle
-* Relevant Harvest
 * User's Insight
 
 The user may optionally review the generated entry before publishing.
@@ -290,7 +289,8 @@ Each module gets its own database tables to preserve flexibility for module-spec
 - Existing tables (comments, submissions, journey_posts, categories, channels, raw_fragments) are legacy from V2 — **do not delete**, but will not be used in the new architecture.
 - New migrations will be added as new `.sql` files under `supabase/migrations/`.
 - Auth: Supabase Auth with email login (Google OAuth deferred to final stage).
-- **Harvest / Insight / Resonance data** follow the same per-module pattern. Harvest content is **configuration** (practice → Harvest questions → options → outcome interpretation → recommendation), populated later by the product/content team (see §3.8) — the framework is built first, content is not invented now.
+- **Harvest data is per-module** — each module keeps its own Harvest configuration and submissions (practice → Harvest questions → options → outcome interpretation → recommendation). Harvest is calibration input and is **not** shared to Resonance. Harvest content is populated later by the product/content team (see §3.8) — the framework is built first, content is not invented now.
+- **Insight / Reflection data is shared** — all modules write their free-form discovery (Insight / Your Reflection / Reflection) into one `reflections` table classified by `source` (`learning` / `meditate` / `sleep` / `eating`), so Resonance is a single converging feed (see §3.6).
 
 ---
 

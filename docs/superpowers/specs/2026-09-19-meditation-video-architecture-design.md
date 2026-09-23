@@ -160,7 +160,7 @@ Combinations tier → complete all combinations → one Harvest → Reflection �
 
 - **Harvest** — "What actually changed?" Structured, preset, practice-specific options (content supplied later by the content team — framework only, no invented content).
 - **Reflection** — after the Harvest, the user enters a **Reflection Space**: a free-form "Your Reflection" mirroring Learning's reflection architecture (reuses Learning's `ReflectionSpace` + the shared `reflections` store with `source: 'meditate'`). It is not scored, not judged, and entirely optional.
-- **Share to Resonance** — optional. On closing the Reflection, the reflection auto-publishes to Resonance unless sharing is unchecked. The Resonance entry is auto-constructed from module + practice + duration/cycle + Harvest.
+- **Share to Resonance** — optional. On closing the Reflection, the reflection auto-publishes to Resonance unless sharing is unchecked. The Resonance entry carries the module + practice + duration/cycle as its origin — Harvest is calibration input and is **not** shared.
 
 **Insight is removed** from the Meditation flow:
 
