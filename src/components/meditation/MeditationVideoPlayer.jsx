@@ -35,9 +35,20 @@ export default function MeditationVideoPlayer({
   const isFree = mode === 'free';
 
   // Duration-based stand-in for the silent demonstration video.
+  // Dev-only: when the test fixture's fast-forward flag is set, each tick
+  // jumps straight to the end so AI/human testers don't wait out real timers.
+  // The flag key must match src/data/devFixtures.js (FAST_FORWARD_KEY). The
+  // `import.meta.env.DEV &&` short-circuit is compiled to `false` in prod.
   useEffect(() => {
     if (videoUrl || !durationSeconds || durationSeconds <= 0) return;
-    const timer = setInterval(() => setElapsed((p) => p + 1), 1000);
+    const timer = setInterval(() => {
+      setElapsed((p) =>
+        import.meta.env.DEV &&
+        localStorage.getItem('taomony_dev_fast_forward') === '1'
+          ? durationSeconds
+          : p + 1
+      );
+    }, 1000);
     return () => clearInterval(timer);
   }, [videoUrl, durationSeconds]);
 

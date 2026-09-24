@@ -1,6 +1,7 @@
 import { Outlet, Link } from 'react-router-dom'
 import { User as UserIcon, LogIn } from 'lucide-react'
 import BottomNav from './components/BottomNav'
+import DevPanel from './components/DevPanel'
 import { useAuth } from './contexts/AuthContext'
 
 function Layout() {
@@ -35,6 +36,7 @@ function Layout() {
         <Outlet />
       </main>
       <BottomNav />
+      {import.meta.env.DEV && <DevPanel />}
     </div>
   )
 }
