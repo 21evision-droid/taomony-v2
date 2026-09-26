@@ -4,10 +4,15 @@ on:
   schedule:
     # Run every 2 days — under Supabase's 7-day threshold, with margin.
     # NOTE: GitHub auto-disables scheduled workflows after 60 days with no
-    # pushes to this repo. Any push resets that timer (a workflow run does not).
+    # pushes. The `bump` job below pushes a timestamp commit each run (via
+    # secrets.KEEPALIVE_PAT, not GITHUB_TOKEN) to reset that timer, so this
+    # workflow never gets disabled for inactivity.
     - cron: '0 12 */2 * *'
   # Allow manual trigger from GitHub UI
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   ping:
@@ -21,3 +26,30 @@ jobs:
             "https://jiwsgaegoudcutdnqydf.supabase.co/functions/v1/keepalive"
           echo ""
           echo "Keepalive complete"
+
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Push activity commit (resets 60-day auto-disable timer)
+        env:
+          KEEPALIVE_PAT: ${{ secrets.KEEPALIVE_PAT }}
+        run: |
+          set -e
+          git config user.name "keepalive-bot"
+          git config user.email "keepalive-bot@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${KEEPALIVE_PAT}@github.com/21evision-droid/taomony-v2.git"
+          git pull --rebase origin master
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > .github/keepalive
+          git add .github/keepalive
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: keepalive $(date -u +%Y-%m-%d)"
+            git push origin master
+          else
+            echo "No change to commit"
+          fi
